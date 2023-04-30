@@ -43,7 +43,7 @@ public class PdfStamp {
             // 签章图片
             signInfo.setImagePath("F:\\GZOU\\code\\pdf-main\\src\\main\\resources\\pdf\\chapter.png");
             signInfo.setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC);
-            //// 值越大，代表向x轴坐标平移 缩小 （反之，值越小，印章会放大）
+            // 值越大，代表向x轴坐标平移 缩小 （反之，值越小，印章会放大）
             signInfo.setRectllx(100);
             //// 值越大，代表向y轴坐标向上平移（大小不变）
             signInfo.setRectlly(200);
