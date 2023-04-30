@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>手写签名</title>
+<script type="text/javascript" src="../jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="../ajaxfileupload.js"></script>
+<style type="text/css">
+		#canvas {}
+</style>
+</head>
+<body id="bb" align="center">
+<div id="canvasDiv"></div>
+<br><br><br>
+<button id="btn_clear">清除</button>
+<button id="btn_submit">提交</button>
+<img id="file"/>
+<script language="javascript">
+		document.getElementById("btn_clear").style.fontSize="30px";
+		document.getElementById("btn_submit").style.fontSize="30px";
+try
+   {
+   function onDocumentTouchStart(event) {
+				if(event.touches.length == 1) {
+					event.preventDefault();
+					// Faking double click for touch devices
+					var now = new Date().getTime();
+					if(now - timeOfLastTouch < 250) {
+						reset();
+						return;
+					}
+					timeOfLastTouch = now;
+					mouseX = event.touches[0].pageX;
+					mouseY = event.touches[0].pageY;
+					isMouseDown = true;
+				}
+			}
+			function onDocumentTouchMove(event) {
+				if(event.touches.length == 1) {
+					event.preventDefault();
+					mouseX = event.touches[0].pageX;
+					mouseY = event.touches[0].pageY;
+				}
+			}
+			function onDocumentTouchEnd(event) {
+				if(event.touches.length == 0) {
+					event.preventDefault();
+					isMouseDown = false;
+				}
+			}
+			var canvasDiv = document.getElementById('canvasDiv');
+			var canvas = document.createElement('canvas');
+			var canvasWidth = 1891;
+			var canvasHeight = 670;
+			document.addEventListener('touchmove', onDocumentTouchMove, false);
+			/*document.addEventListener('touchstart', onDocumentTouchStart, true);
+			document.addEventListener('touchend', onDocumentTouchEnd, true);*/
+			var point = {};
+			point.notFirst = false;
+			canvas.setAttribute('width', canvasWidth);
+			canvas.setAttribute('height', canvasHeight);
+			canvas.setAttribute('id', 'canvas');
+			canvas.setAttribute('border', '1');
+			canvasDiv.appendChild(canvas);
+			if(typeof G_vmlCanvasManager != 'undefined') {
+				canvas = G_vmlCanvasManager.initElement(canvas);
+			}
+			var context = canvas.getContext("2d");
+			var img = new Image();
+			img.src = "./write.jpg";
+			img.onload = function() {
+				var ptrn = context.createPattern(img, 'no-repeat');
+				context.fillStyle = ptrn;
+				context.fillRect(0, 0, canvas.width, canvas.height);
+			}
+			canvas.addEventListener("touchstart", function(e) {
+				console.log("touchstart");
+				var mouseX = e.touches[0].pageX - this.offsetLeft;
+				var mouseY = e.touches[0].pageY - this.offsetTop;
+				paint = true;
+				addClick(e.touches[0].pageX - this.offsetLeft, e.touches[0].pageY - this.offsetTop);
+				redraw();
+			});
+			canvas.addEventListener("touchend", function(e) {
+				console.log("touchend");
+				paint = false;
+			});
+			canvas.addEventListener("touchmove", function(e) {
+				console.log("touchmove");
+				console.log(e);
+				console.log("触摸坐标:"+(e.touches[0].clientX - this.offsetLeft)+","+(e.touches[0].clientY - this.offsetTop));
+				if(paint) {
+					addClick(e.touches[0].pageX - this.offsetLeft, e.touches[0].pageY - this.offsetTop, true);
+					redraw();
+				}
+			});
+			canvas.addEventListener("mousedown", function(e) {
+				console.log("mousedown");
+				var mouseX = e.pageX - this.offsetLeft;
+				var mouseY = e.pageY - this.offsetTop;
+				paint = true;
+				addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+				redraw();
+			});
+			canvas.addEventListener("mousemove", function(e) {
+				console.log(e);
+				/*console.log(this.offsetLeft);
+				console.log(this.offsetTop);*/
+				console.log("鼠标坐标:"+(e.pageX - this.offsetLeft)+","+(e.pageY - this.offsetTop));
+				console.log("mousemove");
+				if(paint) {
+					addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+					redraw();
+				}
+			});
+			canvas.addEventListener("mouseup", function(e) {
+				console.log("mouseup");
+				paint = false;
+			});
+			canvas.addEventListener("mouseleave", function(e) {
+				console.log("mouseleave");
+				paint = false;
+			});
+			var clickX = new Array();
+			var clickY = new Array();
+			var clickDrag = new Array();
+			var paint;
+			function addClick(x, y, dragging)
+			{
+				clickX.push(x);
+				clickY.push(y);
+				clickDrag.push(dragging);
+				console.debug(clickDrag);
+			}
+			function redraw() {
+				//canvas.width = canvas.width;
+				// Clears the canvas
+				context.strokeStyle = "black";
+				context.lineJoin = "round";
+				context.lineWidth = 5;
+				while(clickX.length > 0) {
+					point.bx = point.x;
+					point.by = point.y;
+					point.x = clickX.pop();
+					point.y = clickY.pop();
+					console.log(point.x);
+					console.log(point.y);
+					point.drag = clickDrag.pop();
+					context.beginPath();
+					if(point.drag && point.notFirst) {
+						context.moveTo(point.bx, point.by);
+					} else {
+						point.notFirst = true;
+						context.moveTo(point.x - 1, point.y);
+					}
+					context.lineTo(point.x, point.y);
+					context.closePath();
+					context.stroke();
+				}
+
+				  for(var i=0; i < clickX.length; i++)
+				  {		
+				    context.beginPath();
+				    if(clickDrag[i] && i){
+				      context.moveTo(clickX[i-1], clickY[i-1]);
+				    }else{
+				       context.moveTo(clickX[i]-1, clickY[i]);
+				    }
+				     context.lineTo(clickX[i], clickY[i]);
+				     context.closePath();
+				     context.stroke();
+				  }
+			}
+			var clear = document.getElementById("btn_clear");
+			var submit = document.getElementById("btn_submit");
+	        var i =0;
+			clear.addEventListener("click", function() {
+				canvas.width = canvas.width;
+			});
+			submit.addEventListener("click", function() {
+				$("#file").attr("src", canvas.toDataURL("image/png"));
+                /*imgData = canvas.toDataURL("image/png").replace("image/png",'image/octet-stream');
+                var saveFile = function(data, filename) {
+                    var save_link = document.createElementNS('a');
+                    save_link.href = data;
+                    save_link.download = filename;
+
+                    var event = document.createEvent('MouseEvents');
+                    event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    save_link.dispatchEvent(event);
+                }
+                i=i+1;
+                var filename = "测试签名" +i+ '.' + "png";
+                saveFile(imgData,filename);*/
+                $.ajax({
+                    url: '/sign/uploadSign',
+                    type: 'POST',
+                    data: {img:canvas.toDataURL("image/png")},
+                    success: function (data){
+                        if(data=="yes"){
+                            alert("上传图片成功")
+                        }
+                    },
+                    error:function(data,status,e){
+                        alert(e);
+                    }
+                });
+			});
+   }
+catch(err)
+  {
+           txt="本页中存在错误。\n\n"
+           txt+="错误描述：" + err.description + "\n\n"
+           txt+="点击“确定”继续。\n\n"
+           alert(txt)
+   }
+</script>
+</body>
+</html>
