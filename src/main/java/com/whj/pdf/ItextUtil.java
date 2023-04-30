@@ -52,9 +52,10 @@ public class ItextUtil {
             // 签名的位置，是图章相对于pdf页面的位置坐标，原点为pdf页面左下角
             // 四个参数的分别是，图章左下角x，图章左下角y，图章右上角x，图章右上角y
             //四个参数的分别是，图章左下角x，图章左下角y，图章右上角x，图章右上角y
-            appearance.setVisibleSignature(new Rectangle(280, 220, 140, 600), 1, "sig1");
+            appearance.setVisibleSignature(new Rectangle(280, 220, 610, 370), 1, "sig1");
             // 读取图章图片
             Image image = Image.getInstance(signatureInfo.getImagePath());
+            image.setAbsolutePosition(500,0);
             appearance.setSignatureGraphic(image);
             appearance.setCertificationLevel(signatureInfo
                     .getCertificationLevel());

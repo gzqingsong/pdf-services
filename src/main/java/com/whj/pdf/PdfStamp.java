@@ -53,7 +53,7 @@ public class PdfStamp {
             signInfo.setRectury(150);
 
             //签章后的pdf路径
-            app.sign(path, "F:\\GZOU\\code\\pdf-main\\src\\main\\resources\\pdf\\ooo.pdf", signInfo);
+            app.sign(path, "F:\\HSBC\\boc\\pdf-services\\target\\classes\\pdf\\ooo.pdf", signInfo);
         } catch (Exception e) {
             e.printStackTrace();
         }
